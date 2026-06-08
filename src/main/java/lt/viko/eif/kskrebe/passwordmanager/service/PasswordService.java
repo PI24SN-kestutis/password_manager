@@ -3,20 +3,14 @@ package lt.viko.eif.kskrebe.passwordmanager.service;
 import lt.viko.eif.kskrebe.passwordmanager.model.PasswordEntry;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Atsakinga už slaptažodžių įrašų valdymą.
  */
 public class PasswordService {
 
-    /**
-     * Slaptažodžių failo servisas.
-     */
     private final PasswordFileService fileService;
-
-    /**
-     * Šifravimo servisas.
-     */
     private final CryptoService cryptoService;
 
     /**
@@ -38,7 +32,7 @@ public class PasswordService {
      * @param password slaptažodis
      * @param url URL adresas
      * @param notes pastabos
-     * @throws Exception jei nepavyksta išsaugoti duomenų
+     * @throws Exception jei įrašas jau egzistuoja arba nepavyksta išsaugoti duomenų
      */
     public void addEntry(
             String title,
@@ -46,22 +40,52 @@ public class PasswordService {
             String url,
             String notes) throws Exception {
 
-        List<PasswordEntry> entries =
-                fileService.readAll();
+        List<PasswordEntry> entries = fileService.readAll();
 
-        String encryptedPassword =
-                cryptoService.encrypt(password);
+        if (findByTitle(title).isPresent()) {
+            throw new IllegalArgumentException("Įrašas tokiu pavadinimu jau egzistuoja.");
+        }
 
-        PasswordEntry entry =
-                new PasswordEntry(
-                        title,
-                        encryptedPassword,
-                        url,
-                        notes
-                );
+        String encryptedPassword = cryptoService.encrypt(password);
 
-        entries.add(entry);
+        entries.add(new PasswordEntry(
+                title,
+                encryptedPassword,
+                url,
+                notes
+        ));
 
         fileService.saveAll(entries);
+    }
+
+    /**
+     * Ieško slaptažodžio įrašo pagal pavadinimą.
+     *
+     * Paieška atliekama ignoruojant didžiąsias ir mažąsias raides.
+     *
+     * @param title ieškomo įrašo pavadinimas
+     * @return rastas slaptažodžio įrašas arba tuščias Optional
+     * @throws Exception jei nepavyksta nuskaityti duomenų failo
+     */
+    public Optional<PasswordEntry> findByTitle(String title) throws Exception {
+
+        return fileService.readAll()
+                .stream()
+                .filter(entry -> entry.getTitle().equalsIgnoreCase(title))
+                .findFirst();
+    }
+
+    /**
+     * Iššifruoja pasirinkto įrašo slaptažodį.
+     *
+     * Šis metodas naudojamas tik tada, kai vartotojas aiškiai pareikalauja
+     * parodyti slaptažodį.
+     *
+     * @param entry slaptažodžio įrašas
+     * @return iššifruotas slaptažodis
+     * @throws Exception jei nepavyksta iššifruoti slaptažodžio
+     */
+    public String revealPassword(PasswordEntry entry) throws Exception {
+        return cryptoService.decrypt(entry.getEncryptedPassword());
     }
 }

@@ -1,15 +1,52 @@
 package lt.viko.eif.kskrebe.passwordmanager.model;
 
+/**
+ * Slaptažodžio įrašo modelis.
+ *
+ * Ši klasė saugo vieną slaptažodžių tvarkyklės įrašą:
+ * - pavadinimą;
+ * - užšifruotą slaptažodį;
+ * - URL adresą;
+ * - papildomas pastabas.
+ *
+ * Slaptažodis saugomas tik užšifruotu pavidalu.
+ */
 public class PasswordEntry {
 
+    /**
+     * Įrašo pavadinimas.
+     */
     private String title;
+
+    /**
+     * Užšifruotas slaptažodis.
+     */
     private String encryptedPassword;
+
+    /**
+     * Svetainės arba sistemos adresas.
+     */
     private String url;
+
+    /**
+     * Papildomos vartotojo pastabos.
+     */
     private String notes;
 
+    /**
+     * Numatytasis konstruktorius.
+     */
     public PasswordEntry() {
     }
 
+    /**
+     * Sukuria naują slaptažodžio įrašą.
+     *
+     * @param title įrašo pavadinimas
+     * @param encryptedPassword užšifruotas slaptažodis
+     * @param url svetainės adresas
+     * @param notes papildomos pastabos
+     */
     public PasswordEntry(
             String title,
             String encryptedPassword,

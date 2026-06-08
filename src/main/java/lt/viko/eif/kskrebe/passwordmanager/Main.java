@@ -3,6 +3,7 @@ package lt.viko.eif.kskrebe.passwordmanager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import lt.viko.eif.kskrebe.passwordmanager.service.PasswordFileService;
+import lt.viko.eif.kskrebe.passwordmanager.service.PasswordService;
 
 /**
  * Pagrindinė JavaFX programos paleidimo klasė.
@@ -18,10 +19,19 @@ public class Main extends Application {
     public void start(Stage stage) {
 
         try {
-            PasswordFileService fileService = new PasswordFileService();
-            fileService.createFileIfNotExists();
 
-            System.out.println("Slaptažodžių CSV failas paruoštas.");
+            PasswordService passwordService =
+                    new PasswordService();
+
+            passwordService.addEntry(
+                    "GitHub",
+                    "ManoSlaptazodis123",
+                    "https://github.com",
+                    "Asmeninė paskyra"
+            );
+
+            System.out.println("Įrašas išsaugotas.");
+
         } catch (Exception e) {
             e.printStackTrace();
         }

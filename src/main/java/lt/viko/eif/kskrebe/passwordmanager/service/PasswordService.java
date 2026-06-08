@@ -88,4 +88,71 @@ public class PasswordService {
     public String revealPassword(PasswordEntry entry) throws Exception {
         return cryptoService.decrypt(entry.getEncryptedPassword());
     }
+
+    /**
+     * Atnaujina esamą slaptažodžio įrašą pagal pavadinimą.
+     *
+     * Naujas slaptažodis prieš išsaugojimą iš naujo užšifruojamas
+     * AES algoritmu.
+     *
+     * @param title esamo įrašo pavadinimas
+     * @param newPassword naujas slaptažodis
+     * @param newUrl naujas URL adresas
+     * @param newNotes naujos pastabos
+     * @throws Exception jei įrašas nerandamas arba nepavyksta išsaugoti duomenų
+     */
+    public void updateEntry(
+            String title,
+            String newPassword,
+            String newUrl,
+            String newNotes) throws Exception {
+
+        List<PasswordEntry> entries = fileService.readAll();
+
+        boolean updated = false;
+
+        for (PasswordEntry entry : entries) {
+            if (entry.getTitle().equalsIgnoreCase(title)) {
+
+                String encryptedPassword =
+                        cryptoService.encrypt(newPassword);
+
+                entry.setEncryptedPassword(encryptedPassword);
+                entry.setUrl(newUrl);
+                entry.setNotes(newNotes);
+
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            throw new IllegalArgumentException("Įrašas nerastas.");
+        }
+
+        fileService.saveAll(entries);
+    }
+
+    /**
+     * Ištrina slaptažodžio įrašą pagal pavadinimą.
+     *
+     * Ištrintas įrašas pašalinamas iš CSV duomenų failo.
+     *
+     * @param title trinamo įrašo pavadinimas
+     * @throws Exception jei įrašas nerandamas arba nepavyksta išsaugoti duomenų
+     */
+    public void deleteEntry(String title) throws Exception {
+
+        List<PasswordEntry> entries = fileService.readAll();
+
+        boolean removed =
+                entries.removeIf(entry ->
+                        entry.getTitle().equalsIgnoreCase(title));
+
+        if (!removed) {
+            throw new IllegalArgumentException("Įrašas nerastas.");
+        }
+
+        fileService.saveAll(entries);
+    }
 }

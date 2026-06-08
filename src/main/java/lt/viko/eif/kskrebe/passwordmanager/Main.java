@@ -2,34 +2,26 @@ package lt.viko.eif.kskrebe.passwordmanager;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import lt.viko.eif.kskrebe.passwordmanager.service.CryptoService;
+import lt.viko.eif.kskrebe.passwordmanager.service.PasswordFileService;
 
+/**
+ * Pagrindinė JavaFX programos paleidimo klasė.
+ */
 public class Main extends Application {
 
+    /**
+     * Paleidžia JavaFX langą ir inicializuoja slaptažodžių duomenų failą.
+     *
+     * @param stage pagrindinis programos langas
+     */
     @Override
     public void start(Stage stage) {
 
-
-
         try {
+            PasswordFileService fileService = new PasswordFileService();
+            fileService.createFileIfNotExists();
 
-            CryptoService crypto =
-                    new CryptoService();
-
-            String encrypted =
-                    crypto.encrypt("Labas123");
-
-            String decrypted =
-                    crypto.decrypt(encrypted);
-
-            System.out.println("Encrypted:");
-            System.out.println(encrypted);
-
-            System.out.println();
-
-            System.out.println("Decrypted:");
-            System.out.println(decrypted);
-
+            System.out.println("Slaptažodžių CSV failas paruoštas.");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,6 +32,11 @@ public class Main extends Application {
         stage.show();
     }
 
+    /**
+     * Programos paleidimo metodas.
+     *
+     * @param args komandų eilutės argumentai
+     */
     public static void main(String[] args) {
         launch(args);
     }

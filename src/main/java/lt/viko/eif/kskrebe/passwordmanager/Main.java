@@ -9,6 +9,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
 
+
+
         try {
 
             CryptoService crypto =
@@ -33,6 +35,8 @@ public class Main extends Application {
         }
 
         stage.setTitle("Slaptažodžių tvarkyklė");
+        stage.setWidth(900);
+        stage.setHeight(600);
         stage.show();
     }
 

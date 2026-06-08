@@ -1,7 +1,6 @@
 package lt.viko.eif.kskrebe.passwordmanager.service;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.util.Base64;
 
@@ -27,20 +26,13 @@ public class CryptoService {
     /**
      * Sukuria naują CryptoService objektą.
      *
-     * Konstruktoriaus metu sugeneruojamas naujas
-     * 256 bitų AES raktas.
+     * Konstruktoriaus metu AES raktas įkeliamas iš failo arba sukuriamas naujas.
      *
-     * @throws Exception jei nepavyksta inicializuoti
-     *                   AES rakto generatoriaus
+     * @throws Exception jei nepavyksta įkelti arba sukurti AES rakto
      */
     public CryptoService() throws Exception {
-
-        KeyGenerator generator =
-                KeyGenerator.getInstance(ALGORITHM);
-
-        generator.init(256);
-
-        this.secretKey = generator.generateKey();
+        KeyService keyService = new KeyService();
+        this.secretKey = keyService.loadOrCreateKey();
     }
 
     /**
@@ -55,15 +47,11 @@ public class CryptoService {
      */
     public String encrypt(String text) throws Exception {
 
-        Cipher cipher =
-                Cipher.getInstance(ALGORITHM);
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
 
-        cipher.init(
-                Cipher.ENCRYPT_MODE,
-                secretKey);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
-        byte[] encrypted =
-                cipher.doFinal(text.getBytes());
+        byte[] encrypted = cipher.doFinal(text.getBytes());
 
         return Base64.getEncoder()
                 .encodeToString(encrypted);
@@ -79,21 +67,15 @@ public class CryptoService {
      * @return pradinis tekstas
      * @throws Exception jei dešifravimo metu įvyksta klaida
      */
-    public String decrypt(String encryptedText)
-            throws Exception {
+    public String decrypt(String encryptedText) throws Exception {
 
-        Cipher cipher =
-                Cipher.getInstance(ALGORITHM);
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
 
-        cipher.init(
-                Cipher.DECRYPT_MODE,
-                secretKey);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-        byte[] decoded =
-                Base64.getDecoder()
-                        .decode(encryptedText);
+        byte[] decoded = Base64.getDecoder()
+                .decode(encryptedText);
 
-        return new String(
-                cipher.doFinal(decoded));
+        return new String(cipher.doFinal(decoded));
     }
 }

@@ -20,17 +20,19 @@ public class Main extends Application {
 
         try {
 
-            PasswordService passwordService =
-                    new PasswordService();
+            PasswordService passwordService = new PasswordService();
 
-            passwordService.addEntry(
-                    "GitHub",
-                    "ManoSlaptazodis123",
-                    "https://github.com",
-                    "Asmeninė paskyra"
-            );
 
-            System.out.println("Įrašas išsaugotas.");
+            passwordService.findByTitle("github")
+                    .ifPresent(entry -> {
+                        System.out.println("Rastas įrašas:");
+                        System.out.println("Pavadinimas: " + entry.getTitle());
+                        System.out.println("URL: " + entry.getUrl());
+                        System.out.println("Pastabos: " + entry.getNotes());
+                        System.out.println("Slaptažodis: ********");
+                    });
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
